@@ -46,6 +46,12 @@ jobs:
           
           EOF
 
+      - name: Preparar Android SDK e aceitar licenças
+        run: |
+          ~/.local/bin/buildozer android clean || true
+          ~/.local/bin/buildozer -v android debug || true
+          yes | ~/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses
+
       - name: Compilar APK
         run: ~/.local/bin/buildozer -v android debug
 
