@@ -60,6 +60,16 @@ jobs:
           warn_on_root = 0
           EOF
 
+      - name: Aceitar licenças Android
+        run: |
+          SDKMANAGER="$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager"
+
+          yes | "$SDKMANAGER" --licenses || true
+
+          "$SDKMANAGER" "platform-tools"
+          "$SDKMANAGER" "platforms;android-35"
+          "$SDKMANAGER" "build-tools;35.0.0"
+
       - name: Compilar APK
         run: |
           ~/.local/bin/buildozer -v android debug
