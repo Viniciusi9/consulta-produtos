@@ -19,43 +19,51 @@ jobs:
             autoconf libtool pkg-config zlib1g-dev \
             libncurses5-dev libncursesw5-dev libtinfo5 \
             cmake libffi-dev libssl-dev
+
           python3 -m pip install --user buildozer Cython==0.29.34 virtualenv
 
-      - name: Criar configuração do Android
+      - name: Criar buildozer.spec
         run: |
-            [app]
-            title = Consulta de Produtos
-            package.name = consulta
-            package.domain = com.i9mundotech
-            source.dir = .
-            source.include_exts = py,csv,png,jpg,jpeg,kv,atlas
-            version = 1.0.0
-            requirements = python3,kivy
-            orientation = portrait
-            fullscreen = 0
-            android.api = 35
-            android.minapi = 23
-            android.ndk = 28c
-            android.archs = arm64-v8a
-            
-            [buildozer]
-            log_level = 2
-            warn_on_root = 0
-          
-      - name: Preparar Android SDK e compilar APK
+          cat > buildozer.spec <<'EOF'
+          [app]
+
+          title = Consulta de Produtos
+
+          package.name = consulta
+
+          package.domain = com.i9mundotech
+
+          source.dir = .
+
+          source.include_exts = py,csv,png,jpg,jpeg,kv,atlas
+
+          version = 1.0.0
+
+          requirements = python3,kivy
+
+          orientation = portrait
+
+          fullscreen = 0
+
+          android.api = 35
+
+          android.minapi = 23
+
+          android.ndk = 28c
+
+          android.archs = arm64-v8a
+
+          [buildozer]
+
+          log_level = 2
+
+          warn_on_root = 0
+          EOF
+
+      - name: Compilar APK
         run: |
-          ~/.local/bin/buildozer -v android debug || true
-
-          SDK_ROOT="$HOME/.buildozer/android/platform/android-sdk"
-          SDKMANAGER="$(find "$SDK_ROOT" -type f -name sdkmanager -print -quit)"
-
-          yes | "$SDKMANAGER" --sdk_root="$SDK_ROOT" --licenses
-          yes | "$SDKMANAGER" --sdk_root="$SDK_ROOT" \
-            "platform-tools" \
-            "build-tools;35.0.0" \
-            "platforms;android-35"
-
           ~/.local/bin/buildozer -v android debug
+
       - name: Disponibilizar APK
         uses: actions/upload-artifact@v4
         with:
